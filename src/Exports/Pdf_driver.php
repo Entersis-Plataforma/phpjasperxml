@@ -153,18 +153,34 @@ class Pdf_driver extends TCPDF implements ExportInterface
     public function export(string $filename='')
     {     
         // $this->console($this->pagecolumnoccupation);
-        if(empty($filename))
+        if(!empty($filename))
         {
-            $this->Output('dummy.pdf','I');
-        }
-        else if($filename=='return')
-        {
-            return $this->Output($filename,'S');
-            
-        }else{
             $this->Output($filename,'F');
         }
+        else
+        {
+            // echo 'asdad';
+            $filename='sample.pdf';
+            $this->Output($filename,'I');
+        }
         
+        // echo $filename;
+    }
+
+    public function getBase64(string $filename='')
+    {
+        // $this->console($this->pagecolumnoccupation);
+        if(!empty($filename))
+        {
+            $this->Output($filename,'F');
+        }
+        else
+        {
+            // echo 'asdad';
+            $filename='sample.pdf';
+            return $this->Output($filename,'S');
+        }
+
         // echo $filename;
     }
 
@@ -1436,7 +1452,6 @@ class Pdf_driver extends TCPDF implements ExportInterface
 
     protected function formatValue(mixed $value, string $pattern) : string
     {
-
         // scientific
         $data = $value;
         $prepattern = $pattern;
@@ -1501,15 +1516,17 @@ class Pdf_driver extends TCPDF implements ExportInterface
         //number
         else if(str_contains($pattern,'#') ) 
         {
-            $fmt = numfmt_create( 'en_US',\NumberFormatter::DECIMAL );
-            $issetpattern = numfmt_set_pattern($fmt,$pattern);            
+            $fmt = numfmt_create( 'en_US', \NumberFormatter::DECIMAL );
+            numfmt_set_pattern($fmt,$pattern);
             try{
-                $data = $fmt->format($value);
+                $data = numfmt_format($fmt,$value);
             }
             catch(Throwable $e)
             {
                 return $data;
-            }            
+            }
+            
+
         }
         return $data;
     }
